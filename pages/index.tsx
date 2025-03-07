@@ -1,16 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Set headers to ensure broad accessibility
+  // Comprehensive headers for image access
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Farcaster-Frame-Version');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   
-  // Use a completely public image URL
-  const imageUrl = 'https://i.imgur.com/WasfUQu.jpeg';
+  // Standardized image URL (ensure it's a direct image link)
+  const imageUrl = 'https://ipfs.io/ipfs/QmUPcU38pgfoGsAumw16ZkRNYzc2euwXKNGaybPYhmcJJ2';
 
-  // For GET request (initial frame load)
+  // GET Request
   if (req.method === 'GET') {
     const frameHTML = `
       <!DOCTYPE html>
@@ -35,7 +34,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(200).send(frameHTML);
   }
 
-  // For POST request (frame interaction)
+  // POST Request
   if (req.method === 'POST') {
     const frameHTML = `
       <!DOCTYPE html>
@@ -60,7 +59,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(200).send(frameHTML);
   }
 
-  // Handle other HTTP methods
+  // Handle other methods
   res.setHeader('Allow', ['GET', 'POST']);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }
