@@ -1,20 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Comprehensive CORS and Access Headers
+  // Set headers to ensure broad accessibility
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Farcaster-Frame-Version');
   
-  // Enable CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  // Verify image URLs separately
-  const imageUrl = 'https://liteflow.mypinata.cloud/ipfs/QmUPcU38pgfoGsAumw16ZkRNYzc2euwXKNGaybPYhmcJJ2';
+  // Use a completely public image URL
+  const imageUrl = 'https://i.imgur.com/WasfUQu.jpeg';
 
   // For GET request (initial frame load)
   if (req.method === 'GET') {
@@ -35,11 +29,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           <meta property="fc:frame:button:2:action" content="link" />
           <meta property="fc:frame:button:2:target" content="https://gallery.tellr.xyz/tokens/8453-0x21a6dd67524b378cad5e3cb16eafa8344a309638-61893967719372861411856819925985705033858036353981909261913245130952709265776" />
         </head>
-        <body>
-          <h1>Debugging Information</h1>
-          <p>Image URL: ${imageUrl}</p>
-          <p>Timestamp: ${new Date().toISOString()}</p>
-        </body>
       </html>
     `;
 
@@ -65,11 +54,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           <meta property="fc:frame:button:2:action" content="link" />
           <meta property="fc:frame:button:2:target" content="https://gallery.tellr.xyz/tokens/8453-0x21a6dd67524b378cad5e3cb16eafa8344a309638-61893967719372861411856819925985705033858036353981898899930887041058161955700" />
         </head>
-        <body>
-          <h1>Debugging Information</h1>
-          <p>Image URL: ${imageUrl}</p>
-          <p>Timestamp: ${new Date().toISOString()}</p>
-        </body>
       </html>
     `;
 
