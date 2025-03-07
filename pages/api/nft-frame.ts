@@ -40,16 +40,31 @@ const NFT_COLLECTION: NFT[] = [
 ];
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Explicitly set CORS and Vercel-specific headers
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers', 
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Farcaster-Frame-Version'
+  );
+  res.setHeader('Content-Type', 'text/html');
+
+  // Handle OPTIONS request for CORS preflight
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   // GET Request - Display Initial NFT Frame
   if (req.method === 'GET') {
     const nftIndex = Number(req.query.index || 0);
     const currentNFT = NFT_COLLECTION[nftIndex] || NFT_COLLECTION[0];
 
-    const frameHTML = `
+    const frameResponse = `
       <!DOCTYPE html>
       <html>
         <head>
-          <title>NFT Marketplace Frame</title>
           <meta property="fc:frame" content="vNext" />
           <meta property="fc:frame:image" content="${currentNFT.imageUrl}" />
           <meta property="fc:frame:post_url" content="${process.env.NEXT_PUBLIC_FRAME_URL}/api/nft-frame?index=${nftIndex}" />
@@ -61,17 +76,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           <meta property="fc:frame:button:2:action" content="link" />
           <meta property="fc:frame:button:2:target" content="${currentNFT.purchaseLink}" />
         </head>
-        <body>
-          <h1>${currentNFT.name}</h1>
-          <video width="300" controls>
-            <source src="${currentNFT.videoUrl}" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </body>
       </html>
     `;
 
-    res.status(200).send(frameHTML);
+    res.status(200).send(frameResponse);
   }
 
   // POST Request - Handle Frame Interactions
@@ -86,7 +94,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>NFT Marketplace Frame</title>
           <meta property="fc:frame" content="vNext" />
           <meta property="fc:frame:image" content="${nextNFT.imageUrl}" />
           <meta property="fc:frame:post_url" content="${process.env.NEXT_PUBLIC_FRAME_URL}/api/nft-frame?index=${nextIndex}" />
@@ -103,4 +110,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     res.status(200).send(responseHTML);
   }
+
+  // Catch-all for other methods
+  res.setHeader('Allow', ['GET', 'POST']);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
 }
